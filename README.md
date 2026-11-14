@@ -20,4 +20,4 @@ When the app matches a person with a job, they apply directly at the source. The
 State agency listings first (Arizona state jobs, ARIZONA@WORK / AZ Job Connection), the National Labor Exchange (NLx), USAJobs, and CareerOneStop. Agency listings win ties — they're the verified layer.
 
 ## Status
-Prototype. Arizona / Phoenix first. Open source.
+Prototype, deployment ready. Arizona / Phoenix first. Open source.

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Match — Phoenix (Prototype)</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0A1628">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --navy:#0A1628; --navy2:#10233D; --navy3:#16304F;
+    --gold:#C9A227; --gold-light:#E7C65C; --gold-dark:#9A7B1A;
+    --ink:#F2F4F7; --muted:#A9B6C6; --dim:#6E7E93;
+    --card:#0F2038; --line:#24405F;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--navy); color:var(--ink);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size:17px; line-height:1.45;}
+  .wrap{max-width:520px; margin:0 auto; padding:0 16px 40px;}
+  header{position:sticky; top:0; z-index:10; background:var(--navy);
+    border-bottom:2px solid var(--gold); padding:14px 16px 10px;}
+  .header-in{max-width:520px; margin:0 auto; display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+  h1{font-size:22px; margin:0; letter-spacing:.3px;}
+  h1 .gold{color:var(--gold);}
+  .tagline{color:var(--muted); font-size:14px; margin-top:2px;}
+  #langBtn{background:var(--navy2); color:var(--gold-light); border:1px solid var(--gold-dark);
+    border-radius:999px; padding:8px 14px; font-size:15px; font-weight:600; cursor:pointer; white-space:nowrap;}
+  h2{font-size:20px; margin:22px 0 6px;}
+  .help{color:var(--muted); font-size:15px; margin:0 0 12px;}
+  textarea{width:100%; min-height:96px; background:var(--navy2); color:var(--ink);
+    border:1px solid var(--line); border-radius:var(--radius); padding:12px; font-size:16px; resize:vertical;}
+  textarea:focus{outline:2px solid var(--gold-dark);}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px;}
+  .chip{background:var(--navy2); color:var(--ink); border:1px solid var(--line);
+    border-radius:999px; padding:9px 13px; font-size:15px; cursor:pointer;}
+  .chip.on{background:var(--gold); border-color:var(--gold); color:#14100a; font-weight:700;}
+  .btn{display:block; width:100%; border:none; border-radius:var(--radius); cursor:pointer;
+    background:var(--gold); color:#14100a; font-size:18px; font-weight:800; padding:15px; margin-top:18px;}
+  .btn.secondary{background:var(--navy2); color:var(--gold-light); border:1px solid var(--gold-dark); font-weight:700;}
+  .skill-list{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 4px;}
+  .skill{display:inline-flex; align-items:center; gap:8px; background:var(--navy3);
+    border:1px solid var(--line); border-radius:999px; padding:8px 8px 8px 13px; font-size:15px;}
+  .skill.trans{background:#1A2A17; border-color:#3d5a2e;}
+  .skill.custom{background:#2A2118; border-color:#8a6d2f;}
+  .skill button{background:var(--gold); border:none; color:#14100a; width:24px; height:24px;
+    border-radius:50%; font-size:15px; font-weight:800; cursor:pointer; line-height:1;}
+  .skill.trans button{background:#7ba05b;}
+  .group-label{font-size:14px; text-transform:uppercase; letter-spacing:1px; color:var(--gold); margin:20px 0 2px; font-weight:700;}
+  .group-sub{color:var(--muted); font-size:14px; margin:0;}
+  .banner{background:linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%); color:#171106;
+    border-radius:var(--radius); padding:14px 16px; font-weight:800; font-size:16.5px; margin:18px 0 10px;}
+  .withheld{color:var(--muted); font-size:14px; margin:0 0 6px;}
+  .withheld b{color:var(--gold-light);}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:15px; margin:14px 0;}
+  .card-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .job-title{font-size:18px; font-weight:800; margin:0;}
+  .employer{color:var(--gold-light); font-size:15px; margin:1px 0 0;}
+  .meta{color:var(--muted); font-size:14.5px; margin-top:2px;}
+  .pct{background:var(--gold); color:#14100a; font-weight:800; border-radius:10px;
+    padding:7px 10px; font-size:16px; white-space:nowrap; text-align:center;}
+  .pct small{display:block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;}
+  .adjacent{display:inline-block; background:#22354F; border:1px solid var(--gold-dark); color:var(--gold-light);
+    border-radius:8px; font-size:13.5px; font-weight:700; padding:4px 9px; margin-top:9px;}
+  .why{font-size:14.5px; margin:10px 0 0;}
+  .why b{color:var(--gold-light);}
+  .needs{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+  .need{font-size:13px; border-radius:999px; padding:4px 9px; border:1px solid var(--line); color:var(--dim);}
+  .need.hit{border-color:var(--gold); color:var(--gold-light); font-weight:700;}
+  .need-label{font-size:13px; color:var(--muted); margin-top:10px;}
+  .expiry{margin-top:12px; font-size:15px; font-weight:700; color:var(--gold-light);
+    border-top:1px dashed var(--line); padding-top:10px;}
+  .expiry.urgent{color:#FFB03A;}
+  .apply{display:block; text-align:center; text-decoration:none; margin-top:10px;
+    background:var(--gold); color:#14100a; font-weight:800; font-size:16.5px;
+    border-radius:11px; padding:13px;}
+  .apply-note{color:var(--dim); font-size:12.5px; text-align:center; margin-top:6px;}
+  .stamp{color:var(--dim); font-size:13px; margin-top:10px;}
+  footer{border-top:1px solid var(--line); margin-top:28px; padding-top:14px;
+    color:var(--muted); font-size:13.5px;}
+  .hidden{display:none !important;}
+  .empty{color:var(--muted); font-size:15px; padding:10px 0;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-in">
+    <div>
+      <h1>Skill<span class="gold">Match</span> · Phoenix</h1>
+      <div class="tagline" id="tagline"></div>
+    </div>
+    <button id="langBtn" type="button">Español</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- VIEW 1: INTAKE -->
+  <section id="viewIntake">
+    <h2 id="intakeH"></h2>
+    <p class="help" id="intakeHelp"></p>
+    <textarea id="skillText"></textarea>
+    <p class="empty hidden" id="intakeHint"></p>
+    <h2 id="chipsH" style="font-size:16px; margin-top:18px;"></h2>
+    <div class="chips" id="chips"></div>
+    <button class="btn" id="buildBtn" type="button"></button>
+  </section>
+
+  <!-- VIEW 2: PROFILE -->
+  <section id="viewProfile" class="hidden">
+    <h2 id="profileH"></h2>
+    <div class="group-label" id="directH"></div>
+    <div class="skill-list" id="directList"></div>
+    <div class="group-label" id="transH"></div>
+    <p class="group-sub" id="transSub"></p>
+    <div class="skill-list" id="transList"></div>
+    <div class="group-label hidden" id="customH"></div>
+    <p class="group-sub hidden" id="customSub"></p>
+    <div class="skill-list" id="customList"></div>
+    <p class="help" id="addedNote"></p>
+    <p class="empty hidden" id="profileEmpty"></p>
+    <button class="btn" id="findBtn" type="button"></button>
+    <button class="btn secondary" id="editBtn" type="button"></button>
+  </section>
+
+  <!-- VIEW 3: RESULTS -->
+  <section id="viewResults" class="hidden">
+    <div class="banner" id="banner"></div>
+    <p class="withheld" id="withheld"></p>
+    <h2 id="resultsH"></h2>
+    <p class="help" id="resultsCount"></p>
+    <div id="cards"></div>
+    <p class="empty hidden" id="noMatch"></p>
+    <button class="btn secondary" id="backProfileBtn" type="button"></button>
+  </section>
+
+  <footer id="footerNote"></footer>
+</div>
+
+<script>
+"use strict";
+/* ============ I18N ============ */
+var STR = {
+  en: {
+    tagline: "Your skills. Real jobs. No ghost postings.",
+    intakeH: "What can you do?",
+    intakeHelp: "Say it in your own words \u2014 a station you run, a card you hold, a machine you use. English or Spanish.",
+    placeholder: "Say what you can do \u2014 e.g. 'I run a grill station, I have a food handler card, I can lift 50 lbs'",
+    chipsH: "Or tap what fits:",
+    build: "Build my skill profile",
+    profileH: "Your skill profile",
+    directH: "Skills from your work",
+    transH: "Transferable skills",
+    transSub: "You already have these \u2014 and they carry to other jobs. Employers look for them.",
+    find: "Find my jobs",
+    edit: "Add or change skills",
+    empty: "No skills yet \u2014 go back and add a few.",
+    customH: "In your own words",
+    customSub: "Kept exactly as you said them \u2014 they ride on your profile and count toward matches.",
+    addedNote: function(a, b){ var s = "Added " + a + " recognized skill" + (a===1?"":"s") + " from what you wrote."; if (b) s += " " + b + " more kept in your own words."; return s; },
+    tryHint: "Tell me one thing you can do \u2014 a station, a machine, a card you hold \u2014 then tap Build my skill profile.",
+    resultsH: "Jobs matched to your skills",
+    banner: "Matched means move \u2014 apply directly at the source. Postings expire, and we never repost a job.",
+    withheld: function(n){ return "<b>" + n + " posting" + (n===1?"":"s") + " expired</b> and left out today \u2014 we never show a job you can't get."; },
+    resultsCount: function(n){ return n + " open job" + (n===1?"":"s") + " match your skills \u2014 best matches first."; },
+    noStrong: "No strong matches yet \u2014 but your skills carry to the jobs below.",
+    transferH: "Your skills also carry to these",
+    weakNote: function(n){ return n + " more job" + (n===1?"":"s") + " were too weak a match to show."; },
+    matchWord: "match",
+    why: "Why you match: ",
+    adjacent: "Outside your title \u2014 your skills transfer.",
+    needs: "Needs:",
+    verifiedUntil: "Verified open until ",
+    daysLeft: function(d){ return d===0 ? "Last day \u2014 apply today" : (d===1 ? "1 day left" : d + " days left"); },
+    posted: "Posted ",
+    source: "Source: ",
+    apply: "Apply directly at the source",
+    applyNote: "Sample data \u2014 in the live app this opens the real posting at the source.",
+    noMatch: "No matches yet \u2014 try adding more skills.",
+    backProfile: "Back to my profile",
+    footer: "Prototype \u2014 listings shown are demonstration data. Live state agency feeds plug in at the next step."
+  },
+  es: {
+    tagline: "Tus habilidades. Trabajos reales. Nada de anuncios fantasma.",
+    intakeH: "\u00bfQu\u00e9 sabes hacer?",
+    intakeHelp: "Dilo con tus palabras: una estaci\u00f3n que manejas, una tarjeta que tienes, una m\u00e1quina que usas. Ingl\u00e9s o espa\u00f1ol.",
+    placeholder: "Escribe lo que sabes hacer \u2014 ej. 'Manejo la parrilla, tengo tarjeta de manipulaci\u00f3n de alimentos, puedo levantar 50 libras'",
+    chipsH: "O toca lo que aplique:",
+    build: "Crear mi perfil de habilidades",
+    profileH: "Tu perfil de habilidades",
+    directH: "Habilidades de tu trabajo",
+    transH: "Habilidades transferibles",
+    transSub: "Ya tienes estas \u2014 y sirven en otros trabajos. Los empleadores las buscan.",
+    find: "Buscar mis trabajos",
+    edit: "Agregar o cambiar habilidades",
+    empty: "A\u00fan no hay habilidades \u2014 vuelve y agrega algunas.",
+    customH: "Con tus propias palabras",
+    customSub: "Guardadas tal como las dijiste \u2014 quedan en tu perfil y cuentan para las coincidencias.",
+    addedNote: function(a, b){ var s = "Se agregaron " + a + " habilidades reconocidas de lo que escribiste."; if (b) s += " " + b + " m\u00e1s con tus propias palabras."; return s; },
+    tryHint: "Dime una cosa que sepas hacer \u2014 una estaci\u00f3n, una m\u00e1quina, una tarjeta \u2014 y toca Crear mi perfil.",
+    resultsH: "Trabajos seg\u00fan tus habilidades",
+    banner: "Si hay coincidencia, act\u00faa \u2014 post\u00falate directamente en la fuente. Los anuncios vencen y nunca volvemos a publicar un trabajo.",
+    withheld: function(n){ return "<b>" + n + " anuncio" + (n===1?"":"s") + " vencido" + (n===1?"":"s") + "</b> se omitieron hoy \u2014 nunca mostramos un trabajo que ya no puedes conseguir."; },
+    resultsCount: function(n){ return n + " trabajo" + (n===1?"":"s") + " abierto" + (n===1?"":"s") + " coinciden con tus habilidades \u2014 mejores coincidencias primero."; },
+    noStrong: "A\u00fan no hay coincidencias fuertes \u2014 pero tus habilidades sirven para los trabajos siguientes.",
+    transferH: "Tus habilidades tambi\u00e9n sirven para estos",
+    weakNote: function(n){ return n + " trabajo" + (n===1?"":"s") + " m\u00e1s con coincidencia muy d\u00e9bil no se mostraron."; },
+    matchWord: "coincidencia",
+    why: "Por qu\u00e9 coincidiste: ",
+    adjacent: "Fuera de tu t\u00edtulo \u2014 tus habilidades se transfieren.",
+    needs: "Requiere:",
+    verifiedUntil: "Verificado abierto hasta el ",
+    daysLeft: function(d){ return d===0 ? "\u00daltimo d\u00eda \u2014 post\u00falate hoy" : (d===1 ? "Queda 1 d\u00eda" : "Quedan " + d + " d\u00edas"); },
+    posted: "Publicado el ",
+    source: "Fuente: ",
+    apply: "Post\u00falate directamente en la fuente",
+    applyNote: "Datos de muestra \u2014 en la app real esto abre el anuncio verdadero en la fuente.",
+    noMatch: "A\u00fan no hay coincidencias \u2014 agrega m\u00e1s habilidades.",
+    backProfile: "Volver a mi perfil",
+    footer: "Prototipo \u2014 los anuncios mostrados son datos de demostraci\u00f3n. Las fuentes reales de agencias estatales se conectan en el siguiente paso."
+  }
+};
+
+/* ============ SKILL ONTOLOGY ============ */
+/* kind: "core" = direct occupational skill; "trans" = transferable skill */
+var SKILLS = {
+  grill_op:   {kind:"core", en:"Grill operation",        es:"Operaci\u00f3n de parrilla"},
+  line_cook:  {kind:"core", en:"Line cooking",           es:"Cocina de l\u00ednea"},
+  knife:      {kind:"core", en:"Knife skills",           es:"Manejo de cuchillos"},
+  prep:       {kind:"core", en:"Prep work",              es:"Trabajo de preparaci\u00f3n"},
+  fryer_op:   {kind:"core", en:"Fryer operation",        es:"Operaci\u00f3n de freidora"},
+  dish:       {kind:"core", en:"Dish pit / dishwashing", es:"Lavaplatos"},
+  food_safety:{kind:"core", en:"Food safety certified",  es:"Certificado en seguridad alimentaria"},
+  inventory:  {kind:"core", en:"Inventory & stocking",   es:"Inventario y reposici\u00f3n"},
+  sanitation: {kind:"core", en:"Cleaning & sanitation",  es:"Limpieza y saneamiento"},
+  forklift:   {kind:"core", en:"Forklift operation",     es:"Operaci\u00f3n de montacargas"},
+  lifting:    {kind:"core", en:"Heavy lifting",          es:"Levantamiento de peso"},
+  dock:       {kind:"core", en:"Loading dock work",      es:"Trabajo en muelle de carga"},
+  picking:    {kind:"core", en:"Order picking & packing",es:"Selecci\u00f3n y empaque de pedidos"},
+  customer_service:{kind:"core", en:"Customer service",  es:"Atenci\u00f3n al cliente"},
+  speed_pressure:   {kind:"trans", en:"Speed under pressure",          es:"Rapidez bajo presi\u00f3n"},
+  stamina:          {kind:"trans", en:"Stamina \u2014 on your feet all shift", es:"Resistencia \u2014 de pie todo el turno"},
+  teamwork:         {kind:"trans", en:"Teamwork under load",           es:"Trabajo en equipo bajo presi\u00f3n"},
+  station_discipline:{kind:"trans", en:"Station discipline",           es:"Disciplina de estaci\u00f3n"},
+  attention_detail: {kind:"trans", en:"Attention to detail",           es:"Atenci\u00f3n al detalle"},
+  multitasking:     {kind:"trans", en:"Multitasking",                  es:"Multitarea"},
+  time_mgmt:        {kind:"trans", en:"Time management",               es:"Manejo del tiempo"}
+};
+
+/* Transferable skills derived from each core skill */
+var TRANSFERS = {
+  grill_op:   ["speed_pressure","stamina","teamwork","station_discipline"],
+  line_cook:  ["speed_pressure","teamwork","station_discipline","multitasking"],
+  knife:      ["attention_detail","station_discipline"],
+  prep:       ["station_discipline","attention_detail","time_mgmt"],
+  fryer_op:   ["speed_pressure","multitasking"],
+  dish:       ["stamina","teamwork","speed_pressure"],
+  food_safety:["attention_detail"],
+  inventory:  ["attention_detail","time_mgmt"],
+  sanitation: ["attention_detail","stamina"],
+  forklift:   ["attention_detail"],
+  lifting:    ["stamina"],
+  dock:       ["stamina","teamwork"],
+  picking:    ["stamina","attention_detail","speed_pressure"],
+  customer_service:["teamwork"]
+};
+
+/* Plain-words phrases (English + Spanish) that map to a core skill */
+var KEYWORDS = {
+  grill_op:   ["grill station","grill","parrilla"],
+  line_cook:  ["line cook","work the line","on the line","grill station","cocinero de l\u00ednea","cocina de l\u00ednea"],
+  knife:      ["knife","cuchillo","chopping","slicing","picar","cortar","butcher"],
+  prep:       ["prep cook","prep work","food prep","do prep","mise en place","preparaci\u00f3n","preparar"],
+  fryer_op:   ["fryer","freidora","deep fry","frito"],
+  dish:       ["dish pit","dishwasher","wash dishes","lavaplatos","lavar platos","dish"],
+  food_safety:["food handler","food safety","food card","servsafe","health card","manipulaci\u00f3n de alimentos","tarjeta de alimentos","seguridad alimentaria"],
+  inventory:  ["inventory","inventario","stocking","stock shelves","reposici\u00f3n","receiving","recibir mercanc\u00eda"],
+  sanitation: ["cleaning","limpieza","sanitation","saneamiento","janitor","limpiar","mopping"],
+  forklift:   ["forklift","montacargas"],
+  lifting:    ["lifting","levantar","heavy lifting","can lift","pounds","libras"],
+  dock:       ["loading dock","dock","muelle","load trucks","cargar camiones","loading"],
+  picking:    ["picking","packing","empaque","order picker","pick and pack","pedidos","empacar"],
+  customer_service:["customer service","customers","clientes","cashier","register","caja","atenci\u00f3n al cliente","serving customers"]
+};
+
+/* Quick-tap chips: label + core skills they add */
+var CHIPS = [
+  {en:"Grill station",        es:"Estaci\u00f3n de parrilla",                 skills:["grill_op"]},
+  {en:"Knife & prep",         es:"Cuchillos y preparaci\u00f3n",              skills:["knife","prep"]},
+  {en:"Fryer",                es:"Freidora",                                  skills:["fryer_op"]},
+  {en:"Dish pit",             es:"Lavaplatos",                                skills:["dish"]},
+  {en:"Prep cooking",         es:"Cocina de preparaci\u00f3n",                skills:["prep"]},
+  {en:"Food handler card",    es:"Tarjeta de manipulaci\u00f3n de alimentos",  skills:["food_safety"]},
+  {en:"Inventory & stocking", es:"Inventario y reposici\u00f3n",               skills:["inventory"]},
+  {en:"Cleaning & sanitation",es:"Limpieza y saneamiento",                    skills:["sanitation"]},
+  {en:"Forklift",             es:"Montacargas",                               skills:["forklift"]},
+  {en:"Heavy lifting",        es:"Levantamiento de peso",                     skills:["lifting"]},
+  {en:"Loading dock",         es:"Muelle de carga",                           skills:["dock"]},
+  {en:"Picking & packing",    es:"Selecci\u00f3n y empaque",                  skills:["picking"]},
+  {en:"Helping customers",    es:"Atenci\u00f3n al cliente",                   skills:["customer_service"]}
+];
+
+/* ============ SAMPLE LISTINGS (demonstration data) ============ */
+/* postedAgo = days ago it was posted; untilOff = days from today the posting is verified open.
+   Negative untilOff = already expired: it is never shown. */
+var LISTINGS = [
+  {title:"Line Cook", titleEs:"Cocinero de l\u00ednea", employer:"Valley Bistro Group",
+   area:"Downtown Phoenix", pay:"$17\u2013$20/hr", titleKey:"line-cook",
+   req:["line_cook","grill_op","food_safety","speed_pressure"],
+   source:"AZ State Jobs (sample)", postedAgo:2, untilOff:5},
+  {title:"Prep Cook", titleEs:"Cocinero de preparaci\u00f3n", employer:"Desert Pearl Catering Co.",
+   area:"Tempe", pay:"$16\u2013$18/hr", titleKey:"prep-cook",
+   req:["prep","knife","food_safety","station_discipline"],
+   source:"ARIZONA@WORK (sample)", postedAgo:1, untilOff:6},
+  {title:"Hospital Kitchen Worker", titleEs:"Trabajador de cocina hospitalaria", employer:"Sonoran Regional Medical Center",
+   area:"Central Phoenix", pay:"$17\u2013$19/hr", titleKey:"hospital-kitchen",
+   req:["food_safety","prep","sanitation","teamwork"],
+   source:"AZ State Jobs (sample)", postedAgo:3, untilOff:4},
+  {title:"School Cafeteria Cook", titleEs:"Cocinero de cafeter\u00eda escolar", employer:"Phoenix Union School District",
+   area:"South Phoenix", pay:"$16\u2013$18.50/hr", titleKey:"cafeteria-cook",
+   req:["food_safety","prep","stamina","teamwork"],
+   source:"AZ State Jobs (sample)", postedAgo:4, untilOff:7},
+  {title:"Commissary Prep Worker", titleEs:"Preparador de comisar\u00eda", employer:"Grand Canyon Commissary Services",
+   area:"West Phoenix", pay:"$16\u2013$17.50/hr", titleKey:"commissary",
+   req:["prep","knife","inventory","station_discipline"],
+   source:"CareerOneStop (sample)", postedAgo:2, untilOff:3},
+  {title:"Catering Assistant", titleEs:"Asistente de catering", employer:"Desert Pearl Catering Co.",
+   area:"Scottsdale", pay:"$16\u2013$19/hr", titleKey:"catering",
+   req:["food_safety","customer_service","teamwork","speed_pressure"],
+   source:"ARIZONA@WORK (sample)", postedAgo:5, untilOff:2},
+  {title:"Grocery Deli Clerk", titleEs:"Empleado de deli", employer:"Sonoran Fresh Markets",
+   area:"Mesa", pay:"$15.50\u2013$17/hr", titleKey:"deli",
+   req:["food_safety","knife","customer_service","sanitation"],
+   source:"CareerOneStop (sample)", postedAgo:1, untilOff:8},
+  {title:"Warehouse Associate", titleEs:"Asociado de almac\u00e9n", employer:"Desert Distribution Center",
+   area:"Tolleson", pay:"$17\u2013$19.50/hr", titleKey:"warehouse",
+   req:["lifting","picking","stamina","teamwork"],
+   source:"ARIZONA@WORK (sample)", postedAgo:3, untilOff:5},
+  {title:"Dishwasher", titleEs:"Lavaplatos", employer:"Valley Bistro Group",
+   area:"Downtown Phoenix", pay:"$15\u2013$16.50/hr", titleKey:"dishwasher",
+   req:["dish","stamina","speed_pressure","sanitation"],
+   source:"AZ State Jobs (sample)", postedAgo:2, untilOff:1},
+  {title:"Food Production Worker", titleEs:"Trabajador de producci\u00f3n de alimentos", employer:"Sun Valley Foods Plant",
+   area:"South Phoenix", pay:"$16.50\u2013$18/hr", titleKey:"production",
+   req:["food_safety","stamina","attention_detail","lifting"],
+   source:"CareerOneStop (sample)", postedAgo:6, untilOff:9},
+  {title:"Fry Cook", titleEs:"Cocinero de freidora", employer:"Copper State Diners",
+   area:"Glendale", pay:"$16\u2013$18/hr", titleKey:"fry-cook",
+   req:["fryer_op","line_cook","speed_pressure","food_safety"],
+   source:"ARIZONA@WORK (sample)", postedAgo:2, untilOff:4},
+  {title:"Forklift Operator", titleEs:"Operador de montacargas", employer:"Desert Distribution Center",
+   area:"Goodyear", pay:"$18\u2013$21/hr", titleKey:"forklift",
+   req:["forklift","dock","attention_detail","lifting"],
+   source:"AZ State Jobs (sample)", postedAgo:4, untilOff:6},
+  {title:"Kitchen Helper", titleEs:"Ayudante de cocina", employer:"Sonoran Regional Medical Center",
+   area:"Central Phoenix", pay:"$15.50\u2013$17/hr", titleKey:"kitchen-helper",
+   req:["dish","sanitation","food_safety","stamina"],
+   source:"AZ State Jobs (sample)", postedAgo:1, untilOff:0},
+  {title:"Inventory Stocker", titleEs:"Reponedor de inventario", employer:"Community Food Warehouse of Phoenix",
+   area:"Phoenix", pay:"$16\u2013$18/hr", titleKey:"stocker",
+   req:["inventory","lifting","picking","stamina"],
+   source:"ARIZONA@WORK (sample)", postedAgo:3, untilOff:10},
+  {title:"Line Cook", titleEs:"Cocinero de l\u00ednea", employer:"Old Town Eatery",
+   area:"Scottsdale", pay:"$17\u2013$19/hr", titleKey:"line-cook",
+   req:["line_cook","grill_op","food_safety"],
+   source:"AZ State Jobs (sample)", postedAgo:9, untilOff:-2},
+  {title:"Warehouse Picker", titleEs:"Seleccionador de almac\u00e9n", employer:"Metro Logistics Depot",
+   area:"Phoenix", pay:"$16.50\u2013$18/hr", titleKey:"warehouse",
+   req:["picking","lifting","stamina"],
+   source:"ARIZONA@WORK (sample)", postedAgo:12, untilOff:-5}
+];
+
+/* ============ EXPANSION: ALL WORK VENUES (added Nov 4) ============ */
+/* The dictionary covers every kind of work, not one trade: kitchen,
+   warehouse, labor, admin/clerical, data processing, hospitality,
+   cleaning, caretaking, retail, maintenance, driving, security. */
+Object.assign(SKILLS, {
+  patience:        {kind:"trans", en:"Patience",                    es:"Paciencia"},
+  communication:   {kind:"trans", en:"Communication",               es:"Comunicaci\u00f3n"},
+  dexterity:       {kind:"trans", en:"Hand dexterity",              es:"Destreza manual"},
+  problem_solving: {kind:"trans", en:"Problem solving",             es:"Resoluci\u00f3n de problemas"},
+  saute_op:   {kind:"core", en:"Saut\u00e9 & short order",     es:"Salteado y \u00f3rdenes r\u00e1pidas"},
+  baking:     {kind:"core", en:"Baking",                       es:"Horneado y panader\u00eda"},
+  expo:       {kind:"core", en:"Expo / expediting",            es:"Expedici\u00f3n de platos"},
+  catering:   {kind:"core", en:"Catering & banquets",          es:"Catering y banquetes"},
+  kitchen_lead:{kind:"core", en:"Kitchen lead",                es:"L\u00edder de cocina"},
+  training:   {kind:"core", en:"Training & mentoring",         es:"Capacitaci\u00f3n y mentor\u00eda"},
+  pallet_jack:{kind:"core", en:"Pallet jack",                  es:"Transpaleta"},
+  scanner:    {kind:"core", en:"Scanner / barcode work",       es:"Esc\u00e1ner y c\u00f3digos"},
+  shipping:   {kind:"core", en:"Shipping & receiving",         es:"Env\u00edos y recepci\u00f3n"},
+  delivery_driving:{kind:"core", en:"Delivery driving",       es:"Reparto en veh\u00edculo"},
+  drivers_license:{kind:"core", en:"Driver's license",         es:"Licencia de conducir"},
+  construction_labor:{kind:"core", en:"Construction labor",    es:"Trabajo de construcci\u00f3n"},
+  hand_tools: {kind:"core", en:"Hand tools",                   es:"Herramientas manuales"},
+  power_tools:{kind:"core", en:"Power tools",                  es:"Herramientas el\u00e9ctricas"},
+  measuring:  {kind:"core", en:"Measuring & layouts",          es:"Medici\u00f3n y trazo"},
+  painting:   {kind:"core", en:"Painting",                     es:"Pintura"},
+  drywall:    {kind:"core", en:"Drywall",                      es:"Tablaroca"},
+  concrete:   {kind:"core", en:"Concrete work",                es:"Trabajo de concreto"},
+  landscaping:{kind:"core", en:"Landscaping & yard work",      es:"Jardiner\u00eda"},
+  demolition: {kind:"core", en:"Demolition",                   es:"Demolici\u00f3n"},
+  data_entry: {kind:"core", en:"Data entry",                   es:"Captura de datos"},
+  typing:     {kind:"core", en:"Fast typing",                  es:"Mecanograf\u00eda r\u00e1pida"},
+  filing:     {kind:"core", en:"Filing & paperwork",           es:"Archivo y papeleo"},
+  phones:     {kind:"core", en:"Phone work",                   es:"Atenci\u00f3n telef\u00f3nica"},
+  scheduling: {kind:"core", en:"Scheduling",                   es:"Agendar y programar"},
+  office_software:{kind:"core", en:"Office software",          es:"Programas de oficina"},
+  reception:  {kind:"core", en:"Reception",                    es:"Recepci\u00f3n"},
+  bookkeeping:{kind:"core", en:"Bookkeeping basics",           es:"Contabilidad b\u00e1sica"},
+  serving:    {kind:"core", en:"Table service",                es:"Servicio de mesas"},
+  bartending: {kind:"core", en:"Bartending",                   es:"Cantinero"},
+  barista:    {kind:"core", en:"Barista / coffee",             es:"Barista"},
+  hosting:    {kind:"core", en:"Hosting & greeting",           es:"Anfitri\u00f3n"},
+  bussing:    {kind:"core", en:"Bussing tables",               es:"Ayudante de mesero"},
+  housekeeping:{kind:"core", en:"Housekeeping",                es:"Limpieza de casas y cuartos"},
+  front_desk: {kind:"core", en:"Front desk",                   es:"Recepci\u00f3n de hotel"},
+  floor_care: {kind:"core", en:"Floor care",                   es:"Cuidado de pisos"},
+  caregiving: {kind:"core", en:"Caregiving",                   es:"Cuidado de personas"},
+  childcare:  {kind:"core", en:"Childcare",                    es:"Cuidado de ni\u00f1os"},
+  patient_care:{kind:"core", en:"Patient care support",        es:"Apoyo en cuidado de pacientes"},
+  cpr_first_aid:{kind:"core", en:"CPR & first aid",            es:"RCP y primeros auxilios"},
+  pet_care:   {kind:"core", en:"Pet & animal care",            es:"Cuidado de mascotas"},
+  cash_handling:{kind:"core", en:"Cash handling / cashier",    es:"Manejo de efectivo y caja"},
+  basic_repairs:{kind:"core", en:"Basic repairs / handyman",   es:"Reparaciones b\u00e1sicas"},
+  plumbing_basics:{kind:"core", en:"Plumbing basics",          es:"Plomer\u00eda b\u00e1sica"},
+  electrical_basics:{kind:"core", en:"Electrical basics",       es:"Electricidad b\u00e1sica"},
+  security_guard:{kind:"core", en:"Security guard",            es:"Guardia de seguridad"}
+});
+
+Object.assign(TRANSFERS, {
+  saute_op:["speed_pressure","multitasking","station_discipline"],
+  baking:["attention_detail","time_mgmt","station_discipline"],
+  expo:["communication","multitasking","attention_detail","speed_pressure"],
+  catering:["teamwork","stamina","time_mgmt"],
+  kitchen_lead:["communication","problem_solving","time_mgmt"],
+  training:["communication","patience"],
+  pallet_jack:["attention_detail","stamina"],
+  scanner:["attention_detail","speed_pressure"],
+  shipping:["attention_detail","time_mgmt","teamwork"],
+  delivery_driving:["time_mgmt","communication","problem_solving"],
+  drivers_license:[],
+  construction_labor:["stamina","teamwork","problem_solving"],
+  hand_tools:["dexterity","attention_detail"],
+  power_tools:["dexterity","attention_detail"],
+  measuring:["attention_detail","dexterity"],
+  painting:["attention_detail","stamina","dexterity"],
+  drywall:["stamina","dexterity"],
+  concrete:["stamina","teamwork"],
+  landscaping:["stamina","attention_detail"],
+  demolition:["stamina","teamwork"],
+  data_entry:["attention_detail","dexterity"],
+  typing:["dexterity","attention_detail"],
+  filing:["attention_detail","time_mgmt"],
+  phones:["communication","patience"],
+  scheduling:["time_mgmt","communication"],
+  office_software:["attention_detail","problem_solving"],
+  reception:["communication","patience","multitasking"],
+  bookkeeping:["attention_detail","problem_solving"],
+  serving:["communication","multitasking","stamina","speed_pressure"],
+  bartending:["multitasking","communication","dexterity"],
+  barista:["speed_pressure","multitasking","dexterity"],
+  hosting:["communication","patience"],
+  bussing:["stamina","speed_pressure","teamwork"],
+  housekeeping:["stamina","attention_detail","time_mgmt"],
+  front_desk:["communication","patience","multitasking"],
+  floor_care:["stamina","attention_detail"],
+  caregiving:["patience","communication","stamina"],
+  childcare:["patience","communication","multitasking"],
+  patient_care:["patience","communication","attention_detail"],
+  cpr_first_aid:["attention_detail","problem_solving"],
+  pet_care:["patience","stamina"],
+  cash_handling:["attention_detail","communication"],
+  basic_repairs:["problem_solving","dexterity"],
+  plumbing_basics:["problem_solving","dexterity"],
+  electrical_basics:["problem_solving","attention_detail"],
+  security_guard:["attention_detail","patience","communication"]
+});
+
+Object.assign(KEYWORDS, {
+  customer_service:["customer service","customers","clientes","atenci\u00f3n al cliente","serving customers","guest service"],
+  saute_op:["saut\u00e9","saute","salteado","flattop","plancha","short order","short-order"],
+  baking:["baking","bake","baker","hornear","panader\u00eda","bread","pastries","reposter\u00eda","bakery"],
+  expo:["expo","expediter","expediting"],
+  catering:["catering","banquet","banquete","events","eventos"],
+  kitchen_lead:["kitchen lead","lead cook","sous chef","kitchen manager","shift lead","supervisor de cocina","encargado de cocina"],
+  training:["train new","training","train people","capacitar","entrenar","mentor","teaching new"],
+  pallet_jack:["pallet jack","transpaleta","pallet"],
+  scanner:["rf scanner","scanner","esc\u00e1ner","barcode","scanning"],
+  shipping:["shipping","receiving","env\u00edos","ship orders"],
+  delivery_driving:["delivery driver","deliveries","reparto","repartidor","route driver","delivering"],
+  drivers_license:["driver's license","drivers license","licencia de conducir","valid license","cdl","drive"],
+  construction_labor:["construction","construcci\u00f3n","laborer","general labor","jornalero","obra","labor"],
+  hand_tools:["hand tools","herramientas manuales","hammer","wrench"],
+  power_tools:["power tools","drill","saw","taladro","herramientas el\u00e9ctricas","power tool"],
+  measuring:["measuring","tape measure","medir","cinta m\u00e9trica","blueprint","planos","measure"],
+  painting:["painting","painter","pintura","pintor","paint"],
+  drywall:["drywall","sheetrock","tablaroca","paneles de yeso"],
+  concrete:["concrete","concreto","cement work"],
+  landscaping:["landscaping","landscaper","jardiner\u00eda","jardinero","yard work","lawn","c\u00e9sped","mowing"],
+  demolition:["demolition","demolici\u00f3n","demo work","tear out"],
+  data_entry:["data entry","data processing","ingreso de datos","captura de datos","keying","ten key","10-key"],
+  typing:["typing","wpm","mecanograf\u00eda","typing speed","type fast"],
+  filing:["filing","file clerk","archivo","archivar","paperwork","tr\u00e1mites"],
+  phones:["answering phones","phone calls","contestar tel\u00e9fonos","call center","phone manner","phones"],
+  scheduling:["scheduling","schedule appointments","programaci\u00f3n de citas","agendar","appointments"],
+  office_software:["microsoft office","excel","word","google sheets","spreadsheet","hojas de c\u00e1lculo","computer skills","computaci\u00f3n","computer","email"],
+  reception:["receptionist","recepcionista"],
+  bookkeeping:["bookkeeping","quickbooks","accounting","contabilidad","invoicing","facturaci\u00f3n"],
+  serving:["server","waiter","waitress","serving tables","mesero","mesera","servir mesas","wait tables"],
+  bartending:["bartender","bartending","cantinero","mixing drinks","bar work"],
+  barista:["barista","coffee","espresso","caf\u00e9"],
+  hosting:["hostess","hosting","anfitri\u00f3n","greeter","seating guests"],
+  bussing:["busser","bussing","busboy","ayudante de mesero"],
+  housekeeping:["housekeeping","hotel rooms","limpieza de casas","clean houses","maid","ama de llaves","recamarera","clean homes"],
+  front_desk:["front desk","hotel desk","recepci\u00f3n de hotel","night audit","front desk agent"],
+  floor_care:["floor care","buffing","waxing","pulido de pisos","trapear","floor tech"],
+  caregiving:["caregiver","caregiving","elderly care","cuidado de ancianos","cuidador","home care","companion care","taking care of","take care of","care for","elderly","seniors","cuidar"],
+  childcare:["childcare","babysitting","babysitter","cuidado de ni\u00f1os","ni\u00f1era","daycare","guarder\u00eda","kids"],
+  patient_care:["patient care","cna","nursing assistant","home health","cuidado de pacientes","hospice"],
+  cpr_first_aid:["cpr","first aid","primeros auxilios","rcp"],
+  pet_care:["pet care","dog walking","animals","cuidado de mascotas","pasear perros","kennel","pets"],
+  cash_handling:["cashier","cash handling","cash register","register","caja","cobrar","money handling"],
+  basic_repairs:["handyman","repairs","maintenance","reparaciones","mantenimiento","fixing","repair"],
+  plumbing_basics:["plumbing","plumber","plomer\u00eda","plomero","pipes"],
+  electrical_basics:["electrical","electrician","electricidad","electricista","wiring"],
+  security_guard:["security guard","guard card","security officer","vigilancia","guardia de seguridad","patrol","security"]
+});
+
+CHIPS.push(
+  {en:"Saut\u00e9 & short order", es:"Salteado y \u00f3rdenes r\u00e1pidas", skills:["saute_op"]},
+  {en:"Baking",                es:"Horneado",                                 skills:["baking"]},
+  {en:"Kitchen lead",          es:"L\u00edder de cocina",                      skills:["kitchen_lead","training"]},
+  {en:"Construction labor",    es:"Construcci\u00f3n",                         skills:["construction_labor"]},
+  {en:"Power tools",           es:"Herramientas el\u00e9ctricas",              skills:["power_tools"]},
+  {en:"Landscaping",           es:"Jardiner\u00eda",                            skills:["landscaping"]},
+  {en:"Painting",              es:"Pintura",                                   skills:["painting"]},
+  {en:"Data entry",            es:"Captura de datos",                          skills:["data_entry"]},
+  {en:"Typing & computers",    es:"Mecanograf\u00eda y computaci\u00f3n",       skills:["typing","office_software"]},
+  {en:"Answering phones",      es:"Atenci\u00f3n telef\u00f3nica",              skills:["phones"]},
+  {en:"Scheduling",            es:"Agendar",                                   skills:["scheduling"]},
+  {en:"Serving tables",        es:"Servicio de mesas",                         skills:["serving"]},
+  {en:"Bartending",            es:"Cantinero",                                 skills:["bartending"]},
+  {en:"Barista",               es:"Barista",                                   skills:["barista"]},
+  {en:"Housekeeping",          es:"Limpieza de casas",                         skills:["housekeeping"]},
+  {en:"Caregiving",            es:"Cuidado de personas",                       skills:["caregiving"]},
+  {en:"Childcare",             es:"Cuidado de ni\u00f1os",                      skills:["childcare"]},
+  {en:"CPR / First Aid",       es:"RCP / Primeros auxilios",                   skills:["cpr_first_aid"]},
+  {en:"Cashier",               es:"Cajero",                                    skills:["cash_handling"]},
+  {en:"Basic repairs",         es:"Reparaciones b\u00e1sicas",                 skills:["basic_repairs"]},
+  {en:"Security guard",        es:"Guardia de seguridad",                      skills:["security_guard"]},
+  {en:"Driver's license",      es:"Licencia de conducir",                      skills:["drivers_license"]},
+  {en:"Delivery driving",      es:"Reparto",                                   skills:["delivery_driving"]}
+);
+
+LISTINGS.push(
+  {title:"Kitchen Lead", titleEs:"L\u00edder de cocina", employer:"Valley Bistro Group",
+   area:"Phoenix", pay:"$19\u201322/hr", titleKey:"kitchen-lead",
+   req:["kitchen_lead","training","line_cook","food_safety"],
+   source:"AZ State Jobs (sample)", postedAgo:1, untilOff:6},
+  {title:"Saut\u00e9 Cook", titleEs:"Cocinero de salteado", employer:"Copper State Diners",
+   area:"Glendale", pay:"$16.50\u201319/hr", titleKey:"saute-cook",
+   req:["saute_op","line_cook","speed_pressure","food_safety"],
+   source:"ARIZONA@WORK (sample)", postedAgo:2, untilOff:5},
+  {title:"Baker", titleEs:"Panadero", employer:"Desert Pearl Catering Co.",
+   area:"Tempe", pay:"$16\u201318/hr", titleKey:"baker",
+   req:["baking","prep","food_safety","attention_detail"],
+   source:"CareerOneStop (sample)", postedAgo:3, untilOff:7},
+  {title:"Administrative Assistant", titleEs:"Asistente administrativo", employer:"City Services Contractor",
+   area:"Downtown Phoenix", pay:"$17\u201320/hr", titleKey:"admin",
+   req:["office_software","phones","scheduling","filing"],
+   source:"AZ State Jobs (sample)", postedAgo:2, untilOff:8},
+  {title:"Data Entry Clerk", titleEs:"Capturista de datos", employer:"Southwest Records Processing",
+   area:"Phoenix", pay:"$15.50\u201317/hr", titleKey:"data-entry",
+   req:["data_entry","typing","attention_detail"],
+   source:"National Labor Exchange (sample)", postedAgo:1, untilOff:5},
+  {title:"Construction Laborer", titleEs:"Obrero de construcci\u00f3n", employer:"Ironclad Builders",
+   area:"Phoenix", pay:"$17\u201320/hr", titleKey:"laborer",
+   req:["construction_labor","hand_tools","lifting","stamina"],
+   source:"ARIZONA@WORK (sample)", postedAgo:3, untilOff:6},
+  {title:"Landscaper", titleEs:"Jardinero", employer:"Sonoran Landscape Co.",
+   area:"Laveen", pay:"$16\u201318.50/hr", titleKey:"landscaper",
+   req:["landscaping","stamina","lifting"],
+   source:"AZ Job Connection (sample)", postedAgo:2, untilOff:9},
+  {title:"Painter", titleEs:"Pintor", employer:"Valley Paint Pros",
+   area:"Mesa", pay:"$17\u201321/hr", titleKey:"painter",
+   req:["painting","attention_detail","stamina"],
+   source:"CareerOneStop (sample)", postedAgo:4, untilOff:7},
+  {title:"Home Caregiver", titleEs:"Cuidador a domicilio", employer:"Desert Rose Home Care",
+   area:"Phoenix", pay:"$16\u201319/hr", titleKey:"caregiver",
+   req:["caregiving","cpr_first_aid","patience","drivers_license"],
+   source:"AZ State Jobs (sample)", postedAgo:1, untilOff:10},
+  {title:"Childcare Assistant", titleEs:"Asistente de guarder\u00eda", employer:"Little Saguaro Daycare",
+   area:"South Phoenix", pay:"$15\u201317/hr", titleKey:"childcare",
+   req:["childcare","patience","cpr_first_aid"],
+   source:"ARIZONA@WORK (sample)", postedAgo:2, untilOff:6},
+  {title:"Server", titleEs:"Mesero", employer:"Old Town Eatery",
+   area:"Scottsdale", pay:"$15/hr + tips", titleKey:"server",
+   req:["serving","cash_handling","customer_service","speed_pressure"],
+   source:"National Labor Exchange (sample)", postedAgo:1, untilOff:4},
+  {title:"Hotel Housekeeper", titleEs:"Recamarera", employer:"Saguaro Suites Hotel",
+   area:"Central Phoenix", pay:"$16\u201318/hr", titleKey:"housekeeper",
+   req:["housekeeping","stamina","attention_detail"],
+   source:"AZ Job Connection (sample)", postedAgo:3, untilOff:5},
+  {title:"Janitor / Floor Tech", titleEs:"Conserje", employer:"CleanPro Facilities",
+   area:"Phoenix", pay:"$16\u201318/hr", titleKey:"janitor",
+   req:["sanitation","floor_care","stamina"],
+   source:"AZ State Jobs (sample)", postedAgo:5, untilOff:8},
+  {title:"Maintenance Helper", titleEs:"Ayudante de mantenimiento", employer:"Desert Property Group",
+   area:"Phoenix", pay:"$17\u201320/hr", titleKey:"maintenance",
+   req:["basic_repairs","power_tools","plumbing_basics"],
+   source:"CareerOneStop (sample)", postedAgo:2, untilOff:7},
+  {title:"Security Guard", titleEs:"Guardia de seguridad", employer:"Sonoran Protective Services",
+   area:"Phoenix", pay:"$16.50\u201319/hr", titleKey:"security",
+   req:["security_guard","attention_detail","patience"],
+   source:"National Labor Exchange (sample)", postedAgo:4, untilOff:9},
+  {title:"Delivery Driver", titleEs:"Repartidor", employer:"Valley Parts Supply",
+   area:"Phoenix", pay:"$17\u201320/hr", titleKey:"driver",
+   req:["delivery_driving","drivers_license","lifting","time_mgmt"],
+   source:"ARIZONA@WORK (sample)", postedAgo:2, untilOff:3},
+  {title:"Hotel Front Desk Agent", titleEs:"Recepcionista de hotel", employer:"Saguaro Suites Hotel",
+   area:"Central Phoenix", pay:"$16.50\u201319/hr", titleKey:"front-desk",
+   req:["front_desk","office_software","communication","customer_service"],
+   source:"AZ State Jobs (sample)", postedAgo:3, untilOff:6},
+  {title:"Data Entry Clerk", titleEs:"Capturista de datos", employer:"Valley Records Co.",
+   area:"Phoenix", pay:"$15\u201316.50/hr", titleKey:"data-entry",
+   req:["data_entry","typing"],
+   source:"National Labor Exchange (sample)", postedAgo:15, untilOff:-3}
+);
+
+/* ============ STATE ============ */
+var lang = "en";
+var directSkills = {};     /* skillId -> true */
+var customSkills = [];     /* the worker's own words, kept as typed */
+var lastAdded = null;      /* {a: recognized count, b: custom count} from the last Build */
+var removedTrans = {};     /* transferable skillId -> true (user removed it) */
+var workerTitleKey = "general";
+
+function t(){ return STR[lang]; }
+function skillLabel(id){ return SKILLS[id][lang]; }
+function has(obj, k){ return Object.prototype.hasOwnProperty.call(obj, k); }
+
+/* ============ PHRASE -> SKILL MAPPING ============ */
+function parseTextToSkills(text){
+  var found = {};
+  var s = " " + (text || "").toLowerCase() + " ";
+  for (var id in KEYWORDS){
+    var phrases = KEYWORDS[id];
+    for (var i = 0; i < phrases.length; i++){
+      if (s.indexOf(phrases[i]) !== -1){ found[id] = true; break; }
+    }
+  }
+  if (/\b\d{2,3}\s?(lbs?|pounds|libras)\b/.test(s)) found["lifting"] = true;
+  return found;
+}
+
+/* Strip lead-ins so the worker's phrase stands on its own */
+function cleanPhrase(p){
+  var s = (p || "").trim().toLowerCase().replace(/\s+/g, " ");
+  s = s.replace(/^(i can|i know how to|i know|i have|i do|i've|i am|i'm|i|yo puedo|yo tengo|yo s\u00e9|yo se|tengo|puedo|s\u00e9|se|my|mis|mi)\s+/, "");
+  return s.trim();
+}
+
+/* Free text: recognized phrases map to skills; EVERYTHING else the worker
+   wrote is kept as a custom skill in their own words. Nothing is dropped. */
+function parseSubmission(text){
+  var found = parseTextToSkills(text);
+  var raw = (text || "").replace(/\n/g, ",");
+  var parts = raw.split(/[,;.]+|\band\b|\by\b/);
+  var customs = [];
+  for (var i = 0; i < parts.length; i++){
+    var seg = " " + parts[i].toLowerCase() + " ";
+    var segMatched = false;
+    for (var id in KEYWORDS){
+      var phrases = KEYWORDS[id];
+      for (var j = 0; j < phrases.length; j++){ if (seg.indexOf(phrases[j]) !== -1){ segMatched = true; break; } }
+      if (segMatched) break;
+    }
+    if (segMatched) continue;
+    if (/\b\d{2,3}\s?(lbs?|pounds|libras)\b/.test(seg)) continue; /* lifting already mapped */
+    var c = cleanPhrase(parts[i]);
+    if (c.length < 3 || c.length > 60) continue;
+    if (/^(work|job|jobs|trabajo|empleo|stuff|cosas|more|mas|m\u00e1s|anything|todo)$/.test(c)) continue;
+    if (/^(need|looking for|busco|quiero|want)\b/.test(c)) continue; /* job-hunting words, not skills */
+    var dup = false;
+    for (var k = 0; k < customs.length; k++) if (customs[k].toLowerCase() === c) dup = true;
+    for (var m = 0; m < customSkills.length; m++) if (customSkills[m].toLowerCase() === c) dup = true;
+    if (!dup) customs.push(c.charAt(0).toUpperCase() + c.slice(1));
+  }
+  return {found: found, customs: customs};
+}
+
+function inferTitleKey(text){
+  var s = " " + (text || "").toLowerCase() + " ";
+  if (s.indexOf("line cook") !== -1 || has(directSkills,"grill_op")) return "line-cook";
+  if (s.indexOf("prep cook") !== -1) return "prep-cook";
+  if (s.indexOf("dishwasher") !== -1 || s.indexOf("dish pit") !== -1) return "dishwasher";
+  if (s.indexOf("forklift") !== -1) return "forklift";
+  if (s.indexOf("warehouse") !== -1 || has(directSkills,"picking")) return "warehouse";
+  if (has(directSkills,"line_cook")) return "line-cook";
+  if (has(directSkills,"dish")) return "dishwasher";
+  if (has(directSkills,"caregiving")) return "caregiver";
+  if (has(directSkills,"childcare")) return "childcare";
+  if (has(directSkills,"data_entry") || has(directSkills,"office_software")) return "admin";
+  if (has(directSkills,"serving") || has(directSkills,"bartending") || has(directSkills,"barista")) return "server";
+  if (has(directSkills,"housekeeping")) return "housekeeper";
+  if (has(directSkills,"construction_labor") || has(directSkills,"landscaping")) return "laborer";
+  if (has(directSkills,"delivery_driving")) return "driver";
+  if (has(directSkills,"security_guard")) return "security";
+  if (has(directSkills,"basic_repairs")) return "maintenance";
+  if (has(directSkills,"baking")) return "baker";
+  return "general";
+}
+
+/* Transferable skills currently in the profile (derived, minus user-removed) */
+function currentTrans(){
+  var out = {};
+  for (var id in directSkills){
+    var list = TRANSFERS[id] || [];
+    for (var i = 0; i < list.length; i++){
+      if (!removedTrans[list[i]]) out[list[i]] = true;
+    }
+  }
+  return out;
+}
+
+/* ============ MATCHING ============ */
+function addDays(base, n){ var d = new Date(base.getFullYear(), base.getMonth(), base.getDate()); d.setDate(d.getDate() + n); return d; }
+function fmtDate(d){ return d.toLocaleDateString(lang === "es" ? "es-ES" : "en-US", {month:"short", day:"numeric"}); }
+
+function listingSearchText(L){
+  var parts = [L.title, L.titleEs];
+  for (var i = 0; i < L.req.length; i++){ parts.push(SKILLS[L.req[i]].en); parts.push(SKILLS[L.req[i]].es); }
+  return " " + parts.join(" ").toLowerCase() + " ";
+}
+function tokenize(s){
+  return s.toLowerCase().split(/[^a-z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\u00fc]+/).filter(function(w){ return w.length > 3; });
+}
+
+function scoreListing(L, trans){
+  var got = 0, matched = [], matchedSet = {}, coreHits = 0;
+  for (var i = 0; i < L.req.length; i++){
+    var r = L.req[i];
+    if (has(directSkills, r)){ got += 2; matched.push(r); matchedSet[r] = true; coreHits++; }
+    else if (has(trans, r)){ got += 1; matched.push(r); matchedSet[r] = true; }
+  }
+  /* The worker's own words count too: a custom phrase whose words show up
+     in the listing's title or required skills earns credit (max 2 phrases). */
+  var customHits = [];
+  if (customSkills.length){
+    var lt = listingSearchText(L);
+    for (var c = 0; c < customSkills.length && customHits.length < 2; c++){
+      var toks = tokenize(customSkills[c]);
+      for (var q = 0; q < toks.length; q++){
+        if (lt.indexOf(" " + toks[q]) !== -1){ customHits.push(customSkills[c]); break; }
+      }
+    }
+    got += customHits.length;
+  }
+  var pct = L.req.length ? Math.round(100 * got / (2 * L.req.length)) : 0;
+  if (pct > 100) pct = 100;
+  /* Anchor rule: a job is a STRONG match only if at least one real (core)
+     skill is shared, or the worker's own words name the work. Transferable
+     traits alone can raise a score but never create a strong match. */
+  var anchor = coreHits > 0 || customHits.length > 0;
+  return {pct: pct, matched: matched, matchedSet: matchedSet, customHits: customHits, anchor: anchor};
+}
+
+/* ============ RENDERING ============ */
+var $ = function(id){ return document.getElementById(id); };
+
+/* Escape untrusted strings before they are interpolated into innerHTML.
+   Feed fields (jobs.json) and worker-entered phrases are untrusted input
+   permanently — a listing or phrase containing markup must render as
+   text, never as HTML. */
+function esc(s){
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function applyStaticText(){
+  document.documentElement.lang = lang;
+  $("tagline").textContent = t().tagline;
+  $("langBtn").textContent = lang === "en" ? "Espa\u00f1ol" : "English";
+  $("intakeH").textContent = t().intakeH;
+  $("intakeHelp").textContent = t().intakeHelp;
+  $("skillText").placeholder = t().placeholder;
+  $("chipsH").textContent = t().chipsH;
+  $("buildBtn").textContent = t().build;
+  $("profileH").textContent = t().profileH;
+  $("directH").textContent = t().directH;
+  $("transH").textContent = t().transH;
+  $("transSub").textContent = t().transSub;
+  $("customH").textContent = t().customH;
+  $("customSub").textContent = t().customSub;
+  $("findBtn").textContent = t().find;
+  $("editBtn").textContent = t().edit;
+  $("profileEmpty").textContent = t().empty;
+  $("resultsH").textContent = t().resultsH;
+  $("banner").textContent = t().banner;
+  $("noMatch").textContent = t().noMatch;
+  $("backProfileBtn").textContent = t().backProfile;
+  $("footerNote").textContent = t().footer;
+}
+
+function renderChips(){
+  var html = "";
+  for (var i = 0; i < CHIPS.length; i++){
+    var chip = CHIPS[i];
+    var on = true;
+    for (var j = 0; j < chip.skills.length; j++){ if (!has(directSkills, chip.skills[j])) on = false; }
+    html += '<button type="button" class="chip' + (on ? " on" : "") + '" data-chip="' + i + '">' +
+            esc(chip[lang]) + "</button>";
+  }
+  $("chips").innerHTML = html;
+  var btns = $("chips").querySelectorAll(".chip");
+  for (var k = 0; k < btns.length; k++){
+    btns[k].addEventListener("click", function(){
+      var chip = CHIPS[parseInt(this.getAttribute("data-chip"), 10)];
+      var allOn = true;
+      for (var j = 0; j < chip.skills.length; j++){ if (!has(directSkills, chip.skills[j])) allOn = false; }
+      for (var m = 0; m < chip.skills.length; m++){
+        if (allOn) delete directSkills[chip.skills[m]];
+        else directSkills[chip.skills[m]] = true;
+      }
+      renderChips();
+    });
+  }
+}
+
+function skillPill(id, isTrans){
+  return '<span class="skill' + (isTrans ? " trans" : "") + '">' + esc(skillLabel(id)) +
+    '<button type="button" data-remove="' + id + '" data-trans="' + (isTrans ? "1" : "0") + '" aria-label="Remove">&times;</button></span>';
+}
+
+function renderProfile(){
+  var dHtml = "", ids = Object.keys(directSkills);
+  for (var i = 0; i < ids.length; i++) dHtml += skillPill(ids[i], false);
+  $("directList").innerHTML = dHtml;
+
+  var trans = currentTrans();
+  var tIds = Object.keys(trans);
+  var tHtml = "";
+  for (var j = 0; j < tIds.length; j++) tHtml += skillPill(tIds[j], true);
+  $("transList").innerHTML = tHtml;
+
+  var cHtml = "";
+  for (var c = 0; c < customSkills.length; c++){
+    cHtml += '<span class="skill custom">' + esc(customSkills[c]) +
+      '<button type="button" data-custom="' + c + '" aria-label="Remove">&times;</button></span>';
+  }
+  $("customList").innerHTML = cHtml;
+  $("customH").classList.toggle("hidden", !customSkills.length);
+  $("customSub").classList.toggle("hidden", !customSkills.length);
+
+  $("addedNote").textContent = (lastAdded && (lastAdded.a || lastAdded.b)) ? t().addedNote(lastAdded.a, lastAdded.b) : "";
+
+  var total = ids.length + customSkills.length;
+  $("profileEmpty").classList.toggle("hidden", total > 0);
+  $("findBtn").style.opacity = total ? "1" : ".45";
+
+  var btns = $("viewProfile").querySelectorAll("[data-remove]");
+  for (var k = 0; k < btns.length; k++){
+    btns[k].addEventListener("click", function(){
+      var id = this.getAttribute("data-remove");
+      if (this.getAttribute("data-trans") === "1") removedTrans[id] = true;
+      else delete directSkills[id];
+      renderProfile();
+    });
+  }
+  var cbtns = $("viewProfile").querySelectorAll("[data-custom]");
+  for (var q = 0; q < cbtns.length; q++){
+    cbtns[q].addEventListener("click", function(){
+      customSkills.splice(parseInt(this.getAttribute("data-custom"), 10), 1);
+      renderProfile();
+    });
+  }
+}
+
+function renderResults(){
+  var today = new Date();
+  var trans = currentTrans();
+  var open = [], expiredCount = 0;
+  for (var i = 0; i < LISTINGS.length; i++){
+    var L = LISTINGS[i];
+    if (L.untilOff < 0){ expiredCount++; continue; }  /* expired: never shown, never reposted */
+    var sc = scoreListing(L, trans);
+    open.push({L: L, pct: sc.pct, matched: sc.matched, matchedSet: sc.matchedSet, customHits: sc.customHits, anchor: sc.anchor});
+  }
+  open.sort(function(a, b){ return (b.pct - a.pct) || (a.L.untilOff - b.L.untilOff); });
+
+  $("withheld").innerHTML = t().withheld(expiredCount);
+  var strong = [], transfer = [], weakCount = 0;
+  for (var j = 0; j < open.length; j++){
+    var o = open[j];
+    if (o.pct <= 0) continue;
+    if (o.anchor) strong.push(o);
+    else if (o.pct >= 25) transfer.push(o);
+    else weakCount++;
+  }
+  var shown = strong.concat(transfer);
+  $("resultsCount").textContent = t().resultsCount(shown.length);
+  $("noMatch").classList.toggle("hidden", shown.length > 0);
+
+  var html = "";
+  if (!strong.length && transfer.length) html += '<p class="empty">' + t().noStrong + "</p>";
+  for (var k = 0; k < shown.length; k++){
+    var item = shown[k], L = item.L;
+    if (k === strong.length && transfer.length) html += '<div class="group-label">' + t().transferH + "</div>";
+    var until = addDays(today, L.untilOff);
+    var posted = addDays(today, -L.postedAgo);
+    var title = lang === "es" ? L.titleEs : L.title;
+    html += '<article class="card">';
+    html += '<div class="card-top"><div><p class="job-title">' + esc(title) + '</p>' +
+            '<p class="employer">' + esc(L.employer) + '</p>' +
+            '<p class="meta">' + esc(L.area) + " &middot; " + esc(L.pay) + "</p></div>" +
+            '<div class="pct">' + item.pct + '%<small>' + t().matchWord + "</small></div></div>";
+    if (L.titleKey !== workerTitleKey){
+      html += '<span class="adjacent">' + t().adjacent + "</span>";
+    }
+    var whyNames = [];
+    for (var m = 0; m < item.matched.length; m++) whyNames.push(esc(skillLabel(item.matched[m])));
+    for (var w = 0; w < item.customHits.length; w++) whyNames.push('"' + esc(item.customHits[w]) + '"');
+    html += '<p class="why"><b>' + t().why + "</b>" + whyNames.join(", ") + "</p>";
+    html += '<p class="need-label">' + t().needs + '</p><div class="needs">';
+    for (var n = 0; n < L.req.length; n++){
+      var r = L.req[n];
+      html += '<span class="need' + (item.matchedSet[r] ? " hit" : "") + '">' + esc(skillLabel(r)) + "</span>";
+    }
+    html += "</div>";
+    html += '<p class="expiry' + (L.untilOff <= 1 ? " urgent" : "") + '">' +
+            t().verifiedUntil + fmtDate(until) + " &middot; " + esc(t().daysLeft(L.untilOff)) + "</p>";
+    html += '<a class="apply" href="#" onclick="return false;">' + t().apply + "</a>";
+    html += '<p class="apply-note">' + t().applyNote + "</p>";
+    html += '<p class="stamp">' + t().source + esc(L.source) + " &middot; " + t().posted + fmtDate(posted) + "</p>";
+    html += "</article>";
+  }
+  if (weakCount) html += '<p class="apply-note">' + t().weakNote(weakCount) + "</p>";
+  $("cards").innerHTML = html;
+}
+
+/* ============ VIEW SWITCHING ============ */
+function show(view){
+  $("viewIntake").classList.toggle("hidden", view !== "intake");
+  $("viewProfile").classList.toggle("hidden", view !== "profile");
+  $("viewResults").classList.toggle("hidden", view !== "results");
+  window.scrollTo(0, 0);
+}
+
+$("buildBtn").addEventListener("click", function(){
+  var text = $("skillText").value;
+  var res = parseSubmission(text);
+  var addedCount = 0;
+  for (var id in res.found){ if (!has(directSkills, id)) addedCount++; directSkills[id] = true; }
+  for (var i = 0; i < res.customs.length; i++) customSkills.push(res.customs[i]);
+  lastAdded = {a: addedCount, b: res.customs.length};
+  workerTitleKey = inferTitleKey(text);
+  if (!Object.keys(directSkills).length && !customSkills.length){
+    $("intakeHint").textContent = t().tryHint;
+    $("intakeHint").classList.remove("hidden");
+    return;
+  }
+  $("intakeHint").classList.add("hidden");
+  renderProfile();
+  show("profile");
+});
+$("editBtn").addEventListener("click", function(){ renderChips(); show("intake"); });
+$("findBtn").addEventListener("click", function(){
+  if (!Object.keys(directSkills).length && !customSkills.length){ renderChips(); show("intake"); return; }
+  renderResults();
+  show("results");
+});
+$("backProfileBtn").addEventListener("click", function(){ renderProfile(); show("profile"); });
+$("langBtn").addEventListener("click", function(){
+  lang = lang === "en" ? "es" : "en";
+  applyStaticText();
+  renderChips();
+  renderProfile();
+  if (!$("viewResults").classList.contains("hidden")) renderResults();
+});
+
+/* ============ INIT ============ */
+applyStaticText();
+renderChips();
+
+/* ============ FEED LOADER ============ */
+/* Listings load from jobs.json — the seam where live agency feeds plug in.
+   If the feed is present and valid it replaces the built-in samples;
+   if not, the samples stand. Expired postings are filtered at render. */
+(function(){
+  if (!window.fetch) return;
+  fetch("jobs.json", {cache: "no-store"}).then(function(r){
+    return r.ok ? r.json() : null;
+  }).then(function(data){
+    if (data && data.listings && data.listings.length){
+      LISTINGS.length = 0;
+      for (var i = 0; i < data.listings.length; i++) LISTINGS.push(data.listings[i]);
+      if (!$("viewResults").classList.contains("hidden")) renderResults();
+    }
+  }).catch(function(){ /* samples stand */ });
+})();
+
+/* ============ SERVICE WORKER (installable app shell) ============ */
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

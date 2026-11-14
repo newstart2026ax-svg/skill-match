@@ -1,0 +1,83 @@
+{
+ "feed": "usajobs-live",
+ "generated": "2026-11-04",
+ "note": "Live USAJobs postings, Phoenix AZ + 75 mi. Closed postings are dropped at the feed and never reposted.",
+ "listings": [
+  {
+   "title": "Nursing Assistant- Mental Health",
+   "titleEs": "Nursing Assistant- Mental Health",
+   "employer": "Veterans Health Administration",
+   "area": "Phoenix, Arizona",
+   "pay": "$44,610–$70,347/yr",
+   "titleKey": "caregiver",
+   "req": [
+    "patient_care"
+   ],
+   "source": "USAJobs",
+   "postedAgo": 5,
+   "untilOff": 2,
+   "url": "https://www.usajobs.gov:443/job/891120400"
+  },
+  {
+   "title": "LABORER",
+   "titleEs": "LABORER",
+   "employer": "Air Education and Training Command",
+   "area": "Luke AFB, Arizona",
+   "pay": "$19/hr",
+   "titleKey": "laborer",
+   "req": [
+    "construction_labor"
+   ],
+   "source": "USAJobs",
+   "postedAgo": 7,
+   "untilOff": 6,
+   "url": "https://www.usajobs.gov:443/job/890744000"
+  },
+  {
+   "title": "CASHIER-CHECKER",
+   "titleEs": "CASHIER-CHECKER",
+   "employer": "Air Education and Training Command",
+   "area": "Luke AFB, Arizona",
+   "pay": "$16/hr",
+   "titleKey": "general",
+   "req": [
+    "cash_handling"
+   ],
+   "source": "USAJobs",
+   "postedAgo": 8,
+   "untilOff": 7,
+   "url": "https://www.usajobs.gov:443/job/890535000"
+  },
+  {
+   "title": "Laborer",
+   "titleEs": "Laborer",
+   "employer": "Indian Health Service",
+   "area": "Sacaton, Arizona",
+   "pay": "$22–$28/hr",
+   "titleKey": "laborer",
+   "req": [
+    "construction_labor",
+    "landscaping"
+   ],
+   "source": "USAJobs",
+   "postedAgo": 14,
+   "untilOff": 0,
+   "url": "https://www.usajobs.gov:443/job/889751300"
+  },
+  {
+   "title": "Sales Store Checker",
+   "titleEs": "Sales Store Checker",
+   "employer": "Defense Commissary Agency",
+   "area": "Luke AFB, Arizona",
+   "pay": "$17–$21/hr",
+   "titleKey": "general",
+   "req": [
+    "cash_handling"
+   ],
+   "source": "USAJobs",
+   "postedAgo": 217,
+   "untilOff": 57,
+   "url": "https://www.usajobs.gov:443/job/863277000"
+  }
+ ]
+}
